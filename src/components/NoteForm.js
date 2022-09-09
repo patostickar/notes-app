@@ -1,20 +1,21 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createNote } from '../reducers/noteReducer';
 
-const NoteForm = ({ createNote }) => {
-  const [newNote, setNewNote] = useState('');
+const NoteForm = () => {
+  const [input, setInput] = useState('');
+
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
-    setNewNote(event.target.value);
+    setInput(event.target.value);
   };
 
   const addNote = (event) => {
     event.preventDefault();
-    createNote({
-      content: newNote,
-      important: Math.random() > 0.5,
-    });
+    dispatch(createNote({ content: input }));
 
-    setNewNote('');
+    setInput('');
   };
 
   return (
@@ -24,7 +25,7 @@ const NoteForm = ({ createNote }) => {
       <form onSubmit={addNote}>
         <input
           id='noteForm'
-          value={newNote}
+          value={input}
           placeholder='write note content here'
           onChange={handleChange}
         />
