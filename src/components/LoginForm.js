@@ -1,40 +1,33 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, setUser } from '../reducers/loginReducer';
 import noteService from '../services/notes';
-import loginService from '../services/login';
-import Notification from './Notification';
+// import Notification from './Notification';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const user = useSelector(({ login }) => login);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const user = JSON.parse(window.localStorage.getItem('loggedNoteappUser'));
     if (user) {
-      setUser(user);
+      dispatch(setUser(user));
       noteService.setToken(user.token);
     }
   }, []);
 
+  useEffect(() => {
+    if (user) noteService.setToken(user.token);
+  }, [user]);
+
   const handleLogin = async (event) => {
     event.preventDefault();
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      setUser(user);
-      noteService.setToken(user.token);
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
-      setUsername('');
-      setPassword('');
-    } catch (exception) {
-      setErrorMessage('wrong credentials');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
+    dispatch(loginUser({ username, password }));
+    window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
+    setUsername('');
+    setPassword('');
   };
 
   const handleLogOut = () => {
@@ -44,7 +37,7 @@ const LoginForm = () => {
 
   return (
     <div>
-      <Notification message={errorMessage} />
+      {/* <Notification message={errorMessage} /> */}
       {user === null ? (
         <div>
           <h2>Login</h2>
