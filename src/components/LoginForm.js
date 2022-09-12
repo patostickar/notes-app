@@ -70,10 +70,7 @@ const LoginForm = () => {
           </form>
         </div>
       ) : (
-        <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogOut}>Log Out</button>
-        </div>
+        <button onClick={handleLogOut}>Log Out</button>
       )}
     </div>
   );
